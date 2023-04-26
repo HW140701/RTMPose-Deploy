@@ -1,0 +1,77 @@
+{
+    "version": "1.0.0rc1",
+    "codebase": {
+        "task": "ObjectDetection",
+        "codebase": "mmdet",
+        "version": "3.0.0rc2",
+        "pth": "../rtmdet_nano_8xb32-300e_coco-person_in1kpretrain/rtmdet_nano_8xb32-300e_coco-person_in1kpretrain-96154d0b.pth",
+        "config": "../rtmdet_nano_8xb32-300e_coco-person_in1kpretrain/rtmdet_nano_8xb32-300e_coco-person.py"
+    },
+    "codebase_config": {
+        "type": "mmdet",
+        "task": "ObjectDetection",
+        "model_type": "sdk",
+        "post_processing": {
+            "score_threshold": 0.05,
+            "confidence_threshold": 0.005,
+            "iou_threshold": 0.5,
+            "max_output_boxes_per_class": 200,
+            "pre_top_k": 5000,
+            "keep_top_k": 100,
+            "background_label_id": -1
+        }
+    },
+    "onnx_config": {
+        "type": "onnx",
+        "export_params": true,
+        "keep_initializers_as_inputs": false,
+        "opset_version": 11,
+        "save_file": "end2end.onnx",
+        "input_names": [
+            "input"
+        ],
+        "output_names": [
+            "dets",
+            "labels"
+        ],
+        "input_shape": null,
+        "optimize": true,
+        "dynamic_axes": {
+            "input": {
+                "0": "batch",
+                "2": "height",
+                "3": "width"
+            },
+            "dets": {
+                "0": "batch",
+                "1": "num_dets"
+            },
+            "labels": {
+                "0": "batch",
+                "1": "num_dets"
+            }
+        }
+    },
+    "backend_config": {
+        "type": "sdk",
+        "pipeline": [
+            {
+                "type": "LoadImageFromFile"
+            },
+            {
+                "type": "LoadAnnotations",
+                "with_bbox": true
+            },
+            {
+                "type": "PackDetInputs",
+                "meta_keys": [
+                    "img_id",
+                    "img_path",
+                    "ori_shape",
+                    "img_shape"
+                ]
+            }
+        ]
+    },
+    "calib_config": {}
+}

@@ -1,0 +1,46 @@
+{
+    "version": "1.0.0rc1",
+    "codebase": {
+        "task": "PoseDetection",
+        "codebase": "mmpose",
+        "version": "1.0.0rc0",
+        "pth": "/home/PJLAB/jiangtao/Downloads/rtmpose-m-aic-coco.pth",
+        "config": "../mmpose/configs/body_2d_keypoint/rtmpose/rtmpose-m_8xb256-420e.py"
+    },
+    "codebase_config": {
+        "type": "mmpose",
+        "task": "PoseDetection",
+        "model_type": "sdk"
+    },
+    "onnx_config": {
+        "type": "onnx",
+        "export_params": true,
+        "keep_initializers_as_inputs": false,
+        "opset_version": 11,
+        "save_file": "end2end.onnx",
+        "input_names": [
+            "input"
+        ],
+        "output_names": [
+            "simcc_x",
+            "simcc_y"
+        ],
+        "input_shape": null,
+        "optimize": true
+    },
+    "backend_config": {
+        "type": "sdk",
+        "pipeline": [
+            {
+                "type": "LoadImageFromFile"
+            },
+            {
+                "type": "GetBBoxCenterScale"
+            },
+            {
+                "type": "PackPoseInputs"
+            }
+        ]
+    },
+    "calib_config": {}
+}

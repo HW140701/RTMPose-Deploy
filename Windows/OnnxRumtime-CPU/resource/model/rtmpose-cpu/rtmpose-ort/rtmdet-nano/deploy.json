@@ -1,0 +1,16 @@
+{
+    "version": "1.0.0rc1",
+    "task": "Detector",
+    "models": [
+        {
+            "name": "rtmdet",
+            "net": "end2end.onnx",
+            "weights": "",
+            "backend": "onnxruntime",
+            "precision": "FP32",
+            "batch_size": 1,
+            "dynamic_shape": true
+        }
+    ],
+    "customs": []
+}
