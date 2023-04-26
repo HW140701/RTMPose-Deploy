@@ -27,7 +27,7 @@ namespace stubbornhuang
 			wchar_t* wstr = new wchar_t[len + 1];
 			memset(wstr, 0, len + 1);
 			MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, wstr, len);
-			wstr[len] = '\0'; // Ôö¼Ó×Ö·û´®½áÎ²
+			wstr[len] = '\0';
 			result.append(wstr);
 			delete[] wstr;
 			return result;

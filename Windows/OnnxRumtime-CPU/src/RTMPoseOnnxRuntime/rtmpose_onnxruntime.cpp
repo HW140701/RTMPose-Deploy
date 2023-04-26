@@ -46,14 +46,17 @@ std::vector<PosePoint> RTMPoseOnnxruntime::Inference(const cv::Mat& input_mat, c
 	cv::Mat crop_mat = crop_result_pair.first;
 	cv::Mat affine_transform_reverse = crop_result_pair.second;
 
-	// 深拷贝输入图片
+	// deep copy
+	// 深拷贝
 	cv::Mat crop_mat_copy;
 	crop_mat.copyTo(crop_mat_copy);
 
+	// BGR to RGB
 	// BGR转RGB
 	cv::Mat input_mat_copy_rgb;
 	cv::cvtColor(crop_mat, input_mat_copy_rgb, CV_BGR2RGB);
 
+	// image data，HWC->CHW，image_data - mean / std normalize
 	// 图片数据，HWC->CHW，image_data - mean / std归一化
 	int image_height = input_mat_copy_rgb.rows;
 	int image_width = input_mat_copy_rgb.cols;
@@ -78,6 +81,7 @@ std::vector<PosePoint> RTMPoseOnnxruntime::Inference(const cv::Mat& input_mat, c
 		}
 	}
 
+	// inference
 	// 推理
 	std::vector<const char*> m_onnx_input_names{ "input" };
 	std::vector<const char*> m_onnx_output_names{ "simcc_x","simcc_y" };
@@ -103,6 +107,7 @@ std::vector<PosePoint> RTMPoseOnnxruntime::Inference(const cv::Mat& input_mat, c
 		m_onnx_output_names.size()
 	);
 
+	// pose process
 	// 后处理
 	std::vector<int64_t> simcc_x_dims = output_tensors[0].GetTensorTypeAndShapeInfo().GetShape();
 	std::vector<int64_t> simcc_y_dims = output_tensors[1].GetTensorTypeAndShapeInfo().GetShape();
@@ -120,12 +125,14 @@ std::vector<PosePoint> RTMPoseOnnxruntime::Inference(const cv::Mat& input_mat, c
 	
 	for (int i = 0; i < joint_num; ++i)
 	{
+		// find the maximum and maximum indexes in the value of each Extend_width length
 		// 在每一个extend_width长度的数值中找到最大值以及最大值的索引
 		auto x_biggest_iter = std::max_element(simcc_x_result + i * extend_width, simcc_x_result + i * extend_width + extend_width);
 		int max_x_pos = std::distance(simcc_x_result + i * extend_width, x_biggest_iter);
 		int pose_x = max_x_pos / 2;
 		float score_x = *x_biggest_iter;
 
+		// find the maximum and maximum indexes in the value of each exten_height length
 		// 在每一个extend_height长度的数值中找到最大值以及最大值的索引
 		auto y_biggest_iter = std::max_element(simcc_y_result + i * extend_height, simcc_y_result + i * extend_height + extend_height);
 		int max_y_pos = std::distance(simcc_y_result + i * extend_height, y_biggest_iter);
@@ -142,6 +149,7 @@ std::vector<PosePoint> RTMPoseOnnxruntime::Inference(const cv::Mat& input_mat, c
 		pose_result.emplace_back(temp_point);
 	}
 
+	// anti affine transformation to obtain the coordinates on the original picture
 	// 反仿射变换获取在原始图片上的坐标
 	for (int i = 0; i < pose_result.size(); ++i)
 	{
@@ -172,10 +180,12 @@ std::pair<cv::Mat, cv::Mat> RTMPoseOnnxruntime::CropImageByDetectBox(const cv::M
 		return result_pair;
 	}
 
+	// deep copy
 	// 深拷贝
 	cv::Mat input_mat_copy;
 	input_image.copyTo(input_mat_copy);
 
+	// calculate the width, height and center points of the human detection box
 	// 计算人体检测框的宽、高以及中心点
 	int box_width = box.right - box.left;
 	int box_height = box.bottom - box.top;
@@ -184,6 +194,7 @@ std::pair<cv::Mat, cv::Mat> RTMPoseOnnxruntime::CropImageByDetectBox(const cv::M
 
 	float aspect_ratio = 192.0 / 256.0;
 
+	// adjust the width and height ratio of the size of the picture in the RTMPOSE input
 	// 根据rtmpose输入图片大小的宽高比例进行调整
 	if (box_width > (aspect_ratio * box_height))
 	{
@@ -197,6 +208,7 @@ std::pair<cv::Mat, cv::Mat> RTMPoseOnnxruntime::CropImageByDetectBox(const cv::M
 	float scale_image_width = box_width * 1.2;
 	float scale_image_height = box_height * 1.2;
 
+	// get the affine matrix
 	// 获取仿射矩阵
 	cv::Mat affine_transform = GetAffineTransform(
 		box_center_x,
@@ -217,7 +229,7 @@ std::pair<cv::Mat, cv::Mat> RTMPoseOnnxruntime::CropImageByDetectBox(const cv::M
 		true
 	);
 
-
+	// affine transform
 	// 进行仿射变换
 	cv::Mat affine_image;
 	cv::warpAffine(input_mat_copy, affine_image, affine_transform, cv::Size(192, 256), cv::INTER_LINEAR);
@@ -230,13 +242,14 @@ std::pair<cv::Mat, cv::Mat> RTMPoseOnnxruntime::CropImageByDetectBox(const cv::M
 
 void RTMPoseOnnxruntime::PrintModelInfo(Ort::Session& session)
 {
+	// print the number of model input nodes
 	//输出模型输入节点的数量
 	size_t num_input_nodes = session.GetInputCount();
 	size_t num_output_nodes = session.GetOutputCount();
 	std::cout << "Number of input node is:" << num_input_nodes << std::endl;
 	std::cout << "Number of output node is:" << num_output_nodes << std::endl;
 
-
+	// print node name
 	//输入输出的节点名
 	Ort::AllocatorWithDefaultOptions allocator;
 	std::cout << std::endl;//换行输出
@@ -247,7 +260,7 @@ void RTMPoseOnnxruntime::PrintModelInfo(Ort::Session& session)
 
 	// 获取输入输出类型
 
-
+	// print input and output dims
 	//获取输入输出维度
 	for (auto i = 0; i < num_input_nodes; i++)
 	{
