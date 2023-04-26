@@ -1,0 +1,7 @@
+# RTMPose-Deploy
+
+RTMPose-Deploy是一个不使用mmdeploy进行RTMPose本地化部署C++示例。
+
+目前我们在Windows系统上使用OnnxRuntime CPU SDK对RTMDetnano和RTMPose进行了本地化部署，并且构建了一个简单的跳帧检测的RTMPoseTrack类用于在CPU上实时的进行二维姿态估计。
+
+后续会考虑添加在Windows系统上使用C++ TensorRT SDK对RTMDetnano和RTMPose进行部署。
