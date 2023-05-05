@@ -9,12 +9,12 @@
 
 #include "rtmdet_onnxruntime.h"
 #include "rtmpose_utils.h"
+#include "onnxruntime_cpu_model_base.h"
 
-class RTMPoseOnnxruntime
+class RTMPoseOnnxruntime : public OnnxruntimeCPUModelBase
 {
 public:
-	RTMPoseOnnxruntime() = delete;
-	RTMPoseOnnxruntime(const std::string& onnx_model_path);
+	RTMPoseOnnxruntime();
 	virtual~RTMPoseOnnxruntime();
 
 public:
@@ -23,12 +23,6 @@ public:
 private:
 	std::pair<cv::Mat, cv::Mat> CropImageByDetectBox(const cv::Mat& input_image, const DetectBox& box);
 
-private:
-	void PrintModelInfo(Ort::Session& session);
-
-private:
-	Ort::Env m_env;
-	Ort::Session m_session;
 };
 
 #endif // !_RTM_POSE_ONNXRUNTIME_H_

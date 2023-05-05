@@ -3,29 +3,17 @@
 
 #include <string>
 
-#include "opencv2/opencv.hpp"
-
-#include "onnxruntime_cxx_api.h"
-#include "cpu_provider_factory.h"
 #include "rtmpose_utils.h"
+#include "onnxruntime_cpu_model_base.h"
 
-
-class RTMDetOnnxruntime
+class RTMDetOnnxruntime : public OnnxruntimeCPUModelBase
 {
 public:
-	RTMDetOnnxruntime() = delete;
-	RTMDetOnnxruntime(const std::string& onnx_model_path);
+	RTMDetOnnxruntime();
 	virtual~RTMDetOnnxruntime();
 
 public:
 	DetectBox Inference(const cv::Mat& input_mat);
-
-private:
-	void PrintModelInfo(Ort::Session& session);
-
-private:
-	Ort::Env m_env;
-	Ort::Session m_session;
 
 };
 

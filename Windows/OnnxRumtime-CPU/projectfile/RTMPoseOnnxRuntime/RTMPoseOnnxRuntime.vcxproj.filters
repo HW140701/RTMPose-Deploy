@@ -5,6 +5,7 @@
     <ClCompile Include="..\..\src\RTMPoseOnnxRuntime\rtmdet_onnxruntime.cpp" />
     <ClCompile Include="..\..\src\RTMPoseOnnxRuntime\rtmpose_onnxruntime.cpp" />
     <ClCompile Include="..\..\src\RTMPoseOnnxRuntime\rtmpose_tracker_onnxruntime.cpp" />
+    <ClCompile Include="..\..\src\RTMPoseOnnxRuntime\onnxruntime_cpu_model_base.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\RTMPoseOnnxRuntime\characterset_convert.h" />
@@ -12,5 +13,6 @@
     <ClInclude Include="..\..\src\RTMPoseOnnxRuntime\rtmpose_onnxruntime.h" />
     <ClInclude Include="..\..\src\RTMPoseOnnxRuntime\rtmpose_tracker_onnxruntime.h" />
     <ClInclude Include="..\..\src\RTMPoseOnnxRuntime\rtmpose_utils.h" />
+    <ClInclude Include="..\..\src\RTMPoseOnnxRuntime\onnxruntime_cpu_model_base.h" />
   </ItemGroup>
 </Project>

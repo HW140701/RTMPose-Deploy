@@ -23,7 +23,14 @@ int main()
 	rtm_pose_onnx_path = "./resource/model/rtmpose-cpu/rtmpose-ort/rtmpose-m/end2end.onnx";
 #endif
 
-	RTMPoseTrackerOnnxruntime rtmpose_tracker_onnxruntime(rtm_detnano_onnx_path, rtm_pose_onnx_path);
+	RTMPoseTrackerOnnxruntime rtmpose_tracker_onnxruntime;
+	bool load_model_result = rtmpose_tracker_onnxruntime.LoadModel(rtm_detnano_onnx_path, rtm_pose_onnx_path, 10);
+
+	if (!load_model_result)
+	{
+		std::cout << "onnx model loaded failed!" << std::endl;
+		return 0;
+	}
 
 	cv::VideoCapture video_reader(0);
 	int frame_num = 0;
