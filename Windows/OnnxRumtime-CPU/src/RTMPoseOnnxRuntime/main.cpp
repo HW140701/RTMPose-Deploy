@@ -43,9 +43,9 @@ int main()
 		if (frame.empty())
 			break;
 
-		std::pair<DetectBox, std::vector<PosePoint>> inference_box= rtmpose_tracker_onnxruntime.Inference(frame);
-		DetectBox detect_box = inference_box.first;
-		std::vector<PosePoint> pose_result = inference_box.second;
+		std::pair<DetectBox, std::vector<PosePoint>> inference_result = rtmpose_tracker_onnxruntime.Inference(frame);
+		DetectBox detect_box = inference_result.first;
+		std::vector<PosePoint> pose_result = inference_result.second;
 
 		cv::rectangle(
 			frame,
