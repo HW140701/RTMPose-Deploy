@@ -72,7 +72,8 @@ int main()
 		}
 
 		imshow("RTMPose", frame);
-		cv::waitKey(1);
+		if (cv::waitKey(1) >= 0)
+			break;
 	}
 
 	video_reader.release();
