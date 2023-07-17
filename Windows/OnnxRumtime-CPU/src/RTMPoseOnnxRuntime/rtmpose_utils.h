@@ -115,4 +115,49 @@ static cv::Mat GetAffineTransform(float center_x, float center_y, float scale_wi
 	return affineTransform;
 }
 
+static float LetterBoxImage(
+	const cv::Mat& image,
+	cv::Mat& out_image,
+	const cv::Size& new_shape = cv::Size(640, 640),
+	int stride = 32,
+	const cv::Scalar& color = cv::Scalar(114, 114, 114),
+	bool fixed_shape = false,
+	bool scale_up = true) 
+{
+	cv::Size shape = image.size();
+	float r = std::min((float)new_shape.height / (float)shape.height, (float)new_shape.width / (float)shape.width);
+
+	if (!scale_up) {
+		r = std::min(r, 1.0f);
+	}
+
+	int newUnpad[2]{
+		(int)std::round((float)shape.width * r), (int)std::round((float)shape.height * r) };
+
+	cv::Mat tmp;
+	if (shape.width != newUnpad[0] || shape.height != newUnpad[1]) {
+		cv::resize(image, tmp, cv::Size(newUnpad[0], newUnpad[1]));
+	}
+	else {
+		tmp = image.clone();
+	}
+
+	float dw = new_shape.width - newUnpad[0];
+	float dh = new_shape.height - newUnpad[1];
+
+	if (!fixed_shape) {
+		dw = (float)((int)dw % stride);
+		dh = (float)((int)dh % stride);
+	}
+
+	int top = int(0);
+	int bottom = int(std::round(dh + 0.1f));
+	int left = int(std::round(0));
+	int right = int(std::round(dw + 0.1f));
+
+	cv::copyMakeBorder(tmp, out_image, top, bottom, left, right, cv::BORDER_CONSTANT, color);
+
+	return 1.0f / r;
+}
+
 #endif // !_RTM_POSE_UTILS_H_

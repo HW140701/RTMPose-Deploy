@@ -24,13 +24,17 @@ int main()
 #endif
 
 	RTMPoseTrackerOnnxruntime rtmpose_tracker_onnxruntime;
-	bool load_model_result = rtmpose_tracker_onnxruntime.LoadModel(rtm_detnano_onnx_path, rtm_pose_onnx_path, 10);
+	bool load_model_result = rtmpose_tracker_onnxruntime.LoadModel(rtm_detnano_onnx_path, rtm_pose_onnx_path, 5);
 
 	if (!load_model_result)
 	{
 		std::cout << "onnx model loaded failed!" << std::endl;
 		return 0;
 	}
+
+	// 如果要检测视频
+	//std::string video_path = "./test.mp4";
+	//cv::VideoCapture video_reader(video_path);
 
 	cv::VideoCapture video_reader(0);
 	int frame_num = 0;
@@ -43,9 +47,26 @@ int main()
 		if (frame.empty())
 			break;
 
-		std::pair<DetectBox, std::vector<PosePoint>> inference_result = rtmpose_tracker_onnxruntime.Inference(frame);
+		int frame_width = frame.cols;
+		int frame_height = frame.rows;
+
+		cv::Mat frame_resize;
+		float scale = LetterBoxImage(frame, frame_resize, cv::Size(320, 320), 32, cv::Scalar(128,128,128), true);
+
+		std::pair<DetectBox, std::vector<PosePoint>> inference_result = rtmpose_tracker_onnxruntime.Inference(frame_resize);
 		DetectBox detect_box = inference_result.first;
+		detect_box.left = detect_box.left * scale;
+		detect_box.right = detect_box.right * scale;
+		detect_box.top = detect_box.top * scale;
+		detect_box.bottom = detect_box.bottom * scale;
+ 
 		std::vector<PosePoint> pose_result = inference_result.second;
+
+		for (int i = 0; i < pose_result.size(); ++i)
+		{
+			pose_result[i].x = pose_result[i].x * scale;
+			pose_result[i].y = pose_result[i].y * scale;
+		}
 
 		if (detect_box.IsValid())
 		{

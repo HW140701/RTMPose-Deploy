@@ -187,8 +187,8 @@ std::pair<cv::Mat, cv::Mat> RTMPoseOnnxruntime::CropImageByDetectBox(const cv::M
 		box_width = box_height * aspect_ratio;
 	}
 
-	float scale_image_width = box_width * 1.2;
-	float scale_image_height = box_height * 1.2;
+	float scale_image_width = box_width * 1.25;
+	float scale_image_height = box_height * 1.25;
 
 	// get the affine matrix
 	// ªÒ»°∑¬…‰æÿ’Û
